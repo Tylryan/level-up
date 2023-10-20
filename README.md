@@ -1,5 +1,19 @@
-# CS DEGREE PROJECT IDEAS
+# LEVEL UP
 > In no particular order
+
+# Compilers / Interpreter / Transpiler
+- [] Compiler / Interpreter / Transpiler
+  - Lexical Analysis
+  - Static Analysis
+  - Semantic Analysis
+  - Code Generation
+  - Optimizing
+
+# Emulator 
+Build a software emulator for an old gaming console or computer system. 
+Emulate the hardware components and allow users to run vintage games or software on modern computers.
+- [] Chip 8
+- [] NES
 
 # File Compression
 	- [] Lossless Compression
@@ -8,15 +22,6 @@
 		- Burrows-Wheeler Transformation (BWT)
 	- [] Lossy Compression (images/audio)
 		- 
-
-# Compilers
-- [] Compiler / Interpreter
-  - Lexical Analysis
-  - Static Analysis
-  - Semantic Analysis
-  - Code Generation
-  - Optimizing
-
 # Data Visualization
 - [] TODO
 
@@ -26,13 +31,6 @@
 # Basic Version Control system
 - Create a basic version of Git
 
-# Digital Circuit Simulator
-- Build a digital circuit simulator that allows users to design and simulate logic circuits. 
-  - basic logic gates
-  - flip-flops
-  - combinational circuits. 
-  - Visualize the circuit behavior and simulate different input scenarios.
-
 # Regular Expression Engine
 - Build a regular expression engine that can match patterns in text.
 
@@ -41,12 +39,16 @@
   - Implement basic ranking algorithms to display search results.
 
 # Memory Allocator
-- Implement a dynamic memory allocator similar to the malloc and free functions in C/C++. 
+- [] Implement a dynamic memory allocator similar to the malloc and free functions in C/C++. 
+- Implement an Arena allocator
 - Explore algorithms like first-fit, best-fit, and worst-fit for memory allocation and deallocation.
 
-# Emulator 
-- Build a software emulator for an old gaming console or computer system. 
-- Emulate the hardware components and allow users to run vintage games or software on modern computers.
+# Digital Circuit Simulator
+- Build a digital circuit simulator that allows users to design and simulate logic circuits. 
+  - basic logic gates
+  - flip-flops
+  - combinational circuits. 
+  - Visualize the circuit behavior and simulate different input scenarios.
 
 # Graphics
 - [] Simple TUI Library from scratch
