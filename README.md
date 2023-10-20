@@ -2,37 +2,36 @@
 > In no particular order
 
 # Compilers / Interpreter / Transpiler
-- [] Compiler / Interpreter / Transpiler
-  - Lexical Analysis
-  - Static Analysis
-  - Semantic Analysis
-  - Code Generation
-  - Optimizing
+[Crafting Interpreters](https://craftinginterpreters.com/contents.html)  
+- [] Compiler / Interpreter / Transpiler  
+  - Lexical Analysis  
+  - Static Analysis  
+  - Semantic Analysis  
+  - Code Generation  
+  - Optimizing  
 
 # Emulator 
 Build a software emulator for an old gaming console or computer system. 
 Emulate the hardware components and allow users to run vintage games or software on modern computers.
-- [] Chip 8
-- [] NES
-
-# File Compression
-	- [] Lossless Compression
-		- Huffman coding
-		- Run Length Encoding (RLE)
-		- Burrows-Wheeler Transformation (BWT)
-	- [] Lossy Compression (images/audio)
-		- 
-# Data Visualization
-- [] TODO
+- [] Chip 8  
+- [] NES  (Eventually)
 
 # Text Editor
 - Create a basic text editor
 
-# Basic Version Control system
-- Create a basic version of Git
-
 # Regular Expression Engine
 - Build a regular expression engine that can match patterns in text.
+
+# Graphics
+- [] Simple TUI Library from scratch
+- [] Simple GUI Library from scratch
+- [] 3D Modeling
+
+# Data Visualization
+- [] TODO
+
+# Basic Version Control system
+- Create a basic version of Git
 
 # Text Based Search Engine
 - Build a simple text-based search engine that indexes a collection of documents and allows users to search for specific keywords. 
@@ -43,30 +42,13 @@ Emulate the hardware components and allow users to run vintage games or software
 - Implement an Arena allocator
 - Explore algorithms like first-fit, best-fit, and worst-fit for memory allocation and deallocation.
 
-# Digital Circuit Simulator
-- Build a digital circuit simulator that allows users to design and simulate logic circuits. 
-  - basic logic gates
-  - flip-flops
-  - combinational circuits. 
-  - Visualize the circuit behavior and simulate different input scenarios.
+# File Compression
+- [] Lossless Compression  
+	- Huffman coding  
+	- Run Length Encoding (RLE)  
+	- Burrows-Wheeler Transformation (BWT)  
+- [] Lossy Compression (images/audio)  
 
-# Graphics
-- [] Simple TUI Library from scratch
-- [] Simple GUI Library from scratch
-- [] 3D Modeling
-
-# Operating Systems
-- [] Kernel Development
-  - Multitasking
-  - Memory Management
-  - File Systems
-  - System Calls
-  - Scheduling Algorithms
-- [] RTOS
-  - Task Scheduling
-  - Interprocess Communication
-  - Hardware Abstraction
-  
 # Networking
 - [] A simple Rest API starting from TCP
 - [] Packet Sniffer
@@ -109,3 +91,22 @@ Emulate the hardware components and allow users to run vintage games or software
 
 # AI
 - [] A simple neural network
+
+# Digital Circuit Simulator
+- Build a digital circuit simulator that allows users to design and simulate logic circuits. 
+  - basic logic gates
+  - flip-flops
+  - combinational circuits. 
+  - Visualize the circuit behavior and simulate different input scenarios.
+
+# Operating Systems
+- [] Kernel Development
+  - Multitasking
+  - Memory Management
+  - File Systems
+  - System Calls
+  - Scheduling Algorithms
+- [] RTOS
+  - Task Scheduling
+  - Interprocess Communication
+  - Hardware Abstraction
