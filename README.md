@@ -14,7 +14,9 @@
 Build a software emulator for an old gaming console or computer system. 
 Emulate the hardware components and allow users to run vintage games or software on modern computers.
 - [] Chip 8  
-- [] NES  (Eventually)
+	- [Austin Morlan - Chip8 Emulator](https://austinmorlan.com/posts/chip8_emulator)  
+	- Expected Completion: 6-8 HRs  
+- [] NES  (Eventually)  
 
 # Text Editor
 - Create a basic text editor
@@ -25,6 +27,8 @@ Emulate the hardware components and allow users to run vintage games or software
 # Graphics
 - [] Simple TUI Library from scratch
 - [] Simple GUI Library from scratch
+- [] 2D Rendering
+  - ROMs for Emulators
 - [] 3D Modeling
 
 # Data Visualization
