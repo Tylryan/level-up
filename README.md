@@ -29,10 +29,17 @@ Emulate the hardware components and allow users to run vintage games or software
 - [] Simple GUI Library from scratch
 - [] 2D Rendering
   - ROMs for Emulators
+  - Games
+	- SDL & OpenGL
+	- Basic Physics
+	- Basic Collision
+ - MS Paint App (For creating sprites for your games)
+- [] Basic Window Manager
+  - [Suckless DWM](https://dwm.suckless.org/)
 - [] 3D Modeling
 
 # Data Visualization
-- [] TODO
+- [] Graphs etc
 
 # Basic Version Control system
 - Create a basic version of Git
@@ -60,7 +67,21 @@ Emulate the hardware components and allow users to run vintage games or software
 - [] Network Protocol Implementation (Simplified Versions)
   - TCP
   - UDP
-  
+- [] Wifi Signal Strength Analyzer
+  - Scan and analyze Wifi signal strengths from different locations
+  - Visualize signal strength
+- [] Wifi Hotspot manager
+  - Create a tool that allows a user to connect to Wifi hotspots
+  - Strength signal information [see bullet above]
+- [] Wifi File Sharing application
+  - Allow devices to share files via wifi WITHOUT using the internet
+  - Get names of devices connected to wifi
+  - Choose which device to send data to
+  - Using sockets transfer files from one device to another
+  - Checkout data encryption
+- [] Bluetooth device locator
+  - Find the strength of a bluetooth connection to a device.
+  - When that device gets closer, the strength should increase
 # Security / Cryptography
 - Implement Cryptographic Algorighms
   - RSA
