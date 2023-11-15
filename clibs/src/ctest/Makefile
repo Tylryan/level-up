@@ -6,6 +6,15 @@ archive: objects
 	cp $(BIN).h ../../include
 	cp lib$(BIN).a ../../libs
 
+install:
+	cp ../../libs/lib$(BIN).a /usr/local/lib
+	cp ../../include/$(BIN).h /usr/local/include
+
+uninstall:
+	rm /usr/local/lib/lib$(BIN).a
+	rm /usr/local/include/$(BIN).h
+
+
 objects: $(BIN).c
 	gcc -c $^
 

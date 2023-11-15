@@ -40,7 +40,7 @@ enum LOG_LEVEL
 	}										   \
 	default:									   \
 	{										   \
-		printf("INTERNAL ERROR | [%s] | %s:%s():%d\t| MESSAGE - \"incorrect use of 'LOG()'\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__, msg); \
+		printf("INTERNAL ERROR | [%s] | %s:%s():%d\t| MESSAGE - \"incorrect use of 'LOG()'\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__); \
 		break; 									   \
 	}										   \
 	}

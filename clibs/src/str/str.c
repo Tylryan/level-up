@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "str.h"
+#include <vector.h>
 
 str_t
 str(const char * string)

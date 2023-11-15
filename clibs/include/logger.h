@@ -25,22 +25,22 @@ enum LOG_LEVEL
 	{										   \
 	case INFO: 									   \
 	{										   \
-		printf("INFO::%s:%s():%d - %s\n", __FILE__,__FUNCTION__, __LINE__, msg);   \
+		printf("INFO | [%s] | %s:%s():%d\t| MESSAGE - \"%s\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__, msg); \
 		break; 								    	   \
 	}										   \
 	case WARN: 									   \
 	{										   \
-		printf("WARN::%s:%s():%d - %s\n", __FILE__,__FUNCTION__, __LINE__, msg);   \
+		printf("WARN | [%s] | %s:%s():%d\t| MESSAGE - \"%s\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__, msg); \
 		break; 								    	   \
 	}										   \
 	case ERR: 									   \
 	{										   \
-		printf("ERR::%s:%s():%d - %s\n", __FILE__,__FUNCTION__, __LINE__, msg);    \
+		printf("ERR  | [%s] | %s:%s():%d\t| MESSAGE - \"%s\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__, msg); \
 		break; 									   \
 	}										   \
 	default:									   \
 	{										   \
-		printf("ERR::%s:%s():%d - incorrect use of LOG\n", __FILE__,__FUNCTION__, __LINE__); \
+		printf("INTERNAL ERROR | [%s] | %s:%s():%d\t| MESSAGE - \"incorrect use of 'LOG()'\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__); \
 		break; 									   \
 	}										   \
 	}

@@ -9,7 +9,7 @@ extern int test_fail;
 #define STRINGIFY(x) #x
 
 #define ASSERT_TRUE(expr)					\
-	if (expr == true)						\
+	if ((expr) == true)						\
 	{								\
 		printf("pass - %s:%s(): '%s'\n", __FILE__, __FUNCTION__, STRINGIFY(expr)); \
 		test_pass+=1;						\
@@ -22,7 +22,7 @@ extern int test_fail;
 	test_count+=1;					
 
 #define ASSERT_FALSE(expr)					\
-	if (expr == false)						\
+	if ((expr) == false)						\
 	{								\
 		printf("pass - %s:%s(): '%s'\n", __FILE__, __FUNCTION__, STRINGIFY(expr)); \
 		test_pass+=1;						\
@@ -33,3 +33,6 @@ extern int test_fail;
 		test_fail+=1;						\
         }								\
 	test_count+=1;					
+
+void ctest_summary(void);
+void ctest_init(void);

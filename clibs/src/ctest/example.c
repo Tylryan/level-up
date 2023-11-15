@@ -24,4 +24,5 @@ main(void)
 	one_equals_one();
 	one_equals_two_fail();
 	one_not_equals_two();
+	test_summary();
 }

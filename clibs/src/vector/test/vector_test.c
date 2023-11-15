@@ -2,23 +2,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "vector.h"
+#include "../vector.h"
 
-#include "ctest.h"
+#include "../../ctest/ctest.h"
 
 typedef struct {
 	char * name;
 } test_person_t;
-
-void
-tests_summarize()
-{
-	printf("******** TEST SUMMMARY **********\n");
-	printf("TOTAL TESTS: %d\n", test_count);
-	printf("TOTAL PASSED: %d\n", test_pass);
-	printf("TOTAL FAILED: %d\n", test_fail);
-	printf("*********************************\n");
-}
 
 void
 test_vector_creation()
@@ -199,7 +189,7 @@ test_insert()
 int
 main(void)
 {
-	printf("========== LIBVECTOR =========\n");
+	ctest_init();
 	test_vector_creation();
 	test_append_int();
 	test_append_string();
@@ -210,6 +200,5 @@ main(void)
 	//test_shift_right();
 	test_insert();
 	
-	tests_summarize();
-
+	ctest_summary();
 }
