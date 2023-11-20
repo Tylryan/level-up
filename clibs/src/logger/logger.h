@@ -20,23 +20,29 @@ enum LOG_LEVEL
 	
 };
 
-#define LOG(LOG_LEVEL, msg) 								   \
+#define LOG(LOG_LEVEL, msg...)						\
 	switch (LOG_LEVEL) 							   	   \
 	{										   \
 	case INFO: 									   \
 	{										   \
-		printf("INFO | [%s] | %s:%s():%d\t| MESSAGE - \"%s\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__, msg); \
+		printf("| INFO | [%s] | %s:%s():%d\t| ", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__); \
+		printf(msg);						\
+		printf("\n");						\
 		break; 								    	   \
 	}										   \
 	case WARN: 									   \
 	{										   \
-		printf("WARN | [%s] | %s:%s():%d\t| MESSAGE - \"%s\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__, msg); \
+		printf("| WARN | [%s] | %s:%s():%d\t| ", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__); \
+		printf(msg);						                   \
+		printf("\n");                                                             \
 		break; 								    	   \
 	}										   \
 	case ERR: 									   \
 	{										   \
-		printf("ERR  | [%s] | %s:%s():%d\t| MESSAGE - \"%s\"\n", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__, msg); \
-		break; 									   \
+		printf("| ERR | [%s] | %s:%s():%d\t| ", __TIMESTAMP__, __FILE__, __FUNCTION__, __LINE__); \
+		printf(msg);						                   \
+		printf("\n");                                                             \
+		break; 								    	   \
 	}										   \
 	default:									   \
 	{										   \
