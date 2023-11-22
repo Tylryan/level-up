@@ -13,7 +13,7 @@ typedef struct {
 void
 test_vector_creation()
 {
-	vector_t hector = Vector(2);
+	vector_t hector = v_create(2);
 	ASSERT_TRUE(hector.array != NULL);
 	ASSERT_TRUE(hector.array != NULL);
 	ASSERT_TRUE(hector.array[0] == 0);
@@ -25,37 +25,37 @@ test_vector_creation()
 }
 
 void
-test_append_int()
+test_add_int()
 {
-	vector_t hector = Vector(2);
-	v_append(&hector, (void*)5);
+	vector_t hector = v_create(2);
+	v_add(&hector, (void*)5);
 	ASSERT_TRUE(hector.size != 0);
 	ASSERT_TRUE(hector.size == 1);
 	ASSERT_TRUE((int*) hector.array[0] == (int*)5);
 
-	v_append(&hector, (void*) 7);
+	v_add(&hector, (void*) 7);
 	ASSERT_TRUE((int*) hector.array[1] == (int*)7);
 
 	v_free(&hector);
 }
 
 void
-test_append_string()
+test_add_string()
 {
-	vector_t hector = Vector(2);
-	v_append(&hector, "HI");
+	vector_t hector = v_create(2);
+	v_add(&hector, "HI");
 	ASSERT_TRUE(hector.size != 0);
 	ASSERT_TRUE(hector.size == 1);
 	ASSERT_TRUE(strcmp((char*) hector.array[0], "HI") == 0);
 
-	v_append(&hector, "THERE");
+	v_add(&hector, "THERE");
 	ASSERT_TRUE(strcmp((char*) hector.array[1], "THERE") == 0);
 
 	v_free(&hector);
 }
 
 void
-test_append_class()
+test_add_class()
 {
 	test_person_t * p1 = malloc(sizeof(test_person_t));
 	test_person_t * p2 = malloc(sizeof(test_person_t));
@@ -64,13 +64,13 @@ test_append_class()
 	p2->name = "SHAWN";
 	p3->name = "DAWN";
 
-	vector_t hector = Vector(2);
-	v_append(&hector, p1);
+	vector_t hector = v_create(2);
+	v_add(&hector, p1);
 	ASSERT_TRUE(hector.size != 0);
 	ASSERT_TRUE(hector.size == 1);
 
-	v_append(&hector, p2);
-	v_append(&hector, p3);
+	v_add(&hector, p2);
+	v_add(&hector, p3);
 
 	test_person_t * p_one   = (test_person_t*) hector.array[0];
 	test_person_t * p_two   = (test_person_t*) hector.array[1];
@@ -91,11 +91,11 @@ test_append_class()
 void
 test_remove()
 {
-	vector_t hector = Vector(2);
-	v_append(&hector, (void*)1);
-	v_append(&hector, (void*)-2);
-	v_append(&hector, (void*)3);
-	v_append(&hector, (void*)4);
+	vector_t hector = v_create(2);
+	v_add(&hector, (void*)1);
+	v_add(&hector, (void*)-2);
+	v_add(&hector, (void*)3);
+	v_add(&hector, (void*)4);
 
 	/* Remove the last element */
 	v_remove(&hector, -1);
@@ -124,35 +124,35 @@ test_remove()
 void
 test_peek()
 {
-	vector_t hector = Vector(2);
-	v_append(&hector, (void*)1);
-	v_append(&hector, (void*)-2);
+	vector_t hector = v_create(2);
+	v_add(&hector, (void*)1);
+	v_add(&hector, (void*)-2);
 	
 	void * last = v_peek(&hector);
 	ASSERT_TRUE(last == (void*)-2);
 	ASSERT_TRUE(v_get(&hector, -1) == (void*) -2);
 }
 
-void
-test_expand()
-{
-	vector_t hector = Vector(2);
-	hector.size = 2;
-	v_expand(&hector);
-
-	ASSERT_TRUE(hector.capacity == 4);
-	ASSERT_TRUE(v_get(&hector, 0) == NULL);
-	ASSERT_TRUE(v_get(&hector, -1) == NULL);
-}
+//void
+//test_expand()
+//{
+//	vector_t hector = v_create(2);
+//	hector.size = 2;
+//	v_expand(&hector);
+//
+//	ASSERT_TRUE(hector.capacity == 4);
+//	ASSERT_TRUE(v_get(&hector, 0) == NULL);
+//	ASSERT_TRUE(v_get(&hector, -1) == NULL);
+//}
 
 void
 test_shift_right()
 {
-	vector_t hector = Vector(2);
-	v_append(&hector, (void*)1);
-	v_append(&hector, (void*)2);
-	v_append(&hector, (void*)3);
-	v_append(&hector, (void*)4);
+	vector_t hector = v_create(2);
+	v_add(&hector, (void*)1);
+	v_add(&hector, (void*)2);
+	v_add(&hector, (void*)3);
+	v_add(&hector, (void*)4);
 
 	v_shift_right(&hector, 1);
 
@@ -169,7 +169,7 @@ test_shift_right()
 void
 test_insert()
 {
-	vector_t hector = Vector(2);
+	vector_t hector = v_create(2);
 	v_insert(&hector, (void*) 1, 0);
 	v_insert(&hector, (void*) 10, 0);
 	v_insert(&hector, (void*) 0, 1);
@@ -191,12 +191,12 @@ main(void)
 {
 	ctest_init();
 	test_vector_creation();
-	test_append_int();
-	test_append_string();
-	test_append_class();
+	test_add_int();
+	test_add_string();
+	test_add_class();
 	test_remove();
 	test_peek();
-	test_expand();
+	//test_expand();
 	//test_shift_right();
 	test_insert();
 	

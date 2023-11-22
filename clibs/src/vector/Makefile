@@ -18,6 +18,7 @@ uninstall:
 objects: $(LIB_NAME).c
 	gcc -g -c $^
 
+# Currently this doesn't work
 test: $(LIB_NAME).c $(LIB_NAME).h $(TEST_DIR)/vector_test
 	make -C $(TEST_DIR)
 	./$(TEST_DIR)/vector_test

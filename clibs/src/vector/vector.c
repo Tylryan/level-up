@@ -5,8 +5,13 @@
 #include <string.h>
 #include "./vector.h"
 
+/* Internal */
+static bool v_below_limit(vector_t * vector);
+static void v_expand(vector_t * vector);
+static void v_contract(vector_t * vector);
+
 vector_t
-Vector(size_t capacity)
+v_create(size_t capacity)
 {
 	vector_t vector = {0};
 	vector.capacity = capacity;
@@ -71,7 +76,7 @@ v_remove(vector_t * vector, long index)
 }
 
 int
-v_append(vector_t * vector, void * element)
+v_add(vector_t * vector, void * element)
 {
 	if (v_is_full(vector))
 	{
