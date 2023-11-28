@@ -24,6 +24,12 @@
 #define BALL_CENTER_Y ((SCREEN_HEIGHT / 2) - BALL_DIMS)
 
 
+enum OBJECT_TYPE
+{
+	OBJ_BALL,
+	OBJ_PADDLE
+};
+
 typedef struct {
 	bool isRunning;
 	SDL_Window * window;
@@ -40,7 +46,9 @@ typedef struct {
 
 typedef struct {
 	GameObject object;
-	int direction;
+	int xDirection;
+	int yDirection;
+	int speed;
 } Ball;
 
 GameObject * GOInit(char * textureSheet, SDL_Renderer * renderer, int x, int y, int w, int h);
@@ -90,7 +98,10 @@ main(void)
 			game.renderer,
 		        BALL_CENTER_X, BALL_CENTER_Y,
 			BALL_DIMS, BALL_DIMS);
-	ball.direction = 1;
+
+	ball.xDirection = 1;
+	ball.yDirection = 1;
+	ball.speed      = 1;
 
 	const int FPS        = 60;
 	const int frameDelay = 1000 / FPS;
@@ -125,19 +136,21 @@ init()
 	if (SDL_Init(SDL_INIT_EVENTS) != 0)
 	{
 		game.isRunning = false;
+
 		LOG(ERR, "SDL FAILED TO INITIALIZE: %s\n", SDL_GetError());
 		return;
 	}
 
-	game.window = SDL_CreateWindow("TITLE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	game.window = SDL_CreateWindow("TITLE",
+				       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+				       SCREEN_WIDTH, SCREEN_HEIGHT,
+				       SDL_WINDOW_SHOWN);
 
 	if (game.window == NULL)
 	{
 		game.isRunning = false;
 
-		char msg[50];
-		sprintf(msg, "SDL Failed to create window: %s\n", SDL_GetError());
-		LOG(ERR, msg);
+		LOG(ERR, "SDL Failed to create window: %s\n", SDL_GetError());
 		return;
 	}
 
@@ -147,9 +160,7 @@ init()
 	{
 		game.isRunning = false;
 
-		char msg[50];
-		sprintf(msg, "SDL Failed to create renderer: %s\n", SDL_GetError());
-		LOG(ERR, msg);
+		LOG(ERR, "SDL Failed to create renderer: %s\n", SDL_GetError());
 		return;
 	}
 
@@ -298,56 +309,61 @@ GORender(GameObject * object)
 }
 
 void
-GOMovePaddle(GameObject * object, int y)
+GOMovePaddle(GameObject * self, int y)
 {
-	int object_height = object->srcRect.h;
-	int object_width  = object->srcRect.w;
+	int object_height = self->srcRect.h;
+	int object_width  = self->srcRect.w;
 
-	object->destRect.y += y;
+	self->destRect.y += y;
 
-	if (object->destRect.y + object_height > SCREEN_HEIGHT)
+	if (self->destRect.y + object_height > SCREEN_HEIGHT)
 	{
-		object->destRect.y = SCREEN_HEIGHT - object_height;
+		self->destRect.y = SCREEN_HEIGHT - object_height;
 	}
 
-	if (object->destRect.y < 0)
+	if (self->destRect.y < 0)
 	{
-		object->destRect.y = 0;
+		self->destRect.y = 0;
 	}
-
-	/* The ball can only do this */
-	//if (object->destRect.x + object_width > SCREEN_WIDTH)
-	//{
-	//	object->destRect.x = BALL_CENTER_X;
-	//	object->destRect.y = BALL_CENTER_Y;
-	//	
-	//}
-
-	//if (object->destRect.x < 0)
-	//{
-	//	object->destRect.x = BALL_CENTER_X;
-	//	object->destRect.y = BALL_CENTER_Y;
-	//	
-	//}
 }
 
+/* TODO(tyler) left collision is not correct, but right is */
 bool
-GO_Collision(GameObject * self, GameObject * other)
+GO_CheckCollision(GameObject * self, GameObject * other)
 {
-	//int s_left = self->destRect.
-	//int s_right
-	
+	int sXpos   = self->destRect.x;
+	int sYpos   = self->destRect.y;
+	int sWidth  = self->srcRect.w;
+	int sHeight = self->srcRect.h;
+
+	int oXpos   = other->destRect.x;
+	int oYpos   = other->destRect.y;
+	int oWidth  = other->srcRect.w;
+	int oHeight = other->srcRect.h;
+
+	bool xRightLap = sXpos + sWidth >= oXpos;
+	bool xLeftLap  = sXpos <= oXpos + oWidth;
+	bool yTopLap   = sYpos >= oYpos;
+	bool yBotLap   = sYpos <= oYpos;
+
+	bool rightCollision = (xRightLap && yTopLap) || (xRightLap && yBotLap);
+	bool leftCollision  = (xLeftLap && yTopLap)  || (xLeftLap && yBotLap);
+	return rightCollision;
 }
+
 void
 Ball_Move(Ball * self, int x, int y)
 {
 	int ball_width = self->object.destRect.w;
 	int ball_height = self->object.srcRect.h;
 
-	self->object.destRect.x +=x;
-	self->object.destRect.y += (y * self->direction);
+	self->object.destRect.x +=(x * self->xDirection);
+	self->object.destRect.y += (y * self->yDirection);
 
-	if (self->object.destRect.x + ball_width > SCREEN_WIDTH)
+	bool roob = self->object.destRect.x + ball_width > SCREEN_WIDTH;
+	bool loob = self->object.destRect.x <= 0;
+	/* Out of bounds */
+	if (roob || loob)
 	{
 		self->object.destRect.x = BALL_CENTER_X;
 		self->object.destRect.y = BALL_CENTER_Y;
@@ -359,7 +375,16 @@ Ball_Move(Ball * self, int x, int y)
 
 	if (hit_bottom || hit_top)
 	{
-		self->direction*=-1;
+		//self->xDirection*=-1;
+		self->yDirection*=-1;
 		
+	}
+
+	/* TODO(tyler) left collision detection in any manner doesn't work */
+	bool leftCollision  = GO_CheckCollision(&ball.object, &paddles[0]);
+	bool rightCollision = GO_CheckCollision(&ball.object, &paddles[1]);
+	if (rightCollision)
+	{
+		self->xDirection*=-1;
 	}
 }
