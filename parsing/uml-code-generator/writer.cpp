@@ -99,7 +99,7 @@ writer_get_ret_val(std::string method_sig)
 	}
 
 	if      (ret_type == "int")    {return "0";     }
-	else if (ret_type == "float")  { return "0.0";  }
+	else if (ret_type == "float")  { return "0.0f";  }
 	else if (ret_type == "byte")   { return "0";    }
 	else if (ret_type == "short")  { return "0";    }
 	else if (ret_type == "long")   { return "0";    }

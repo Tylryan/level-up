@@ -1,10 +1,12 @@
 package app.com.company.courses;
 
-public class Biology implements Person, Course {
+import app.com.company.people.Person;
+
+public class Biology implements Course {
     public Person person;
 
-    public float getGrade() {
+    public byte getGrade() {
         //TODO implement method 
-        return 0.0;
+        return 0;
     }
 }
