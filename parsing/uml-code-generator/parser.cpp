@@ -8,6 +8,9 @@
 
 /* Private functions */
 struct parser parser_create(std::vector<struct token*> tokens, bool has_packages);
+void parser_destroy(struct parser * self);
+void parser_destroy_object(union p_object * self);
+
 struct token * parser_peek(struct parser *self);
 struct token * parser_peek_next(struct parser * self);
 struct token * parser_peek_prev(struct parser * self);
@@ -41,6 +44,29 @@ parser_parse(struct parser * self)
 	}
 	
 	return std::vector<struct klass>();
+}
+
+void
+parser_destroy(struct parser * self)
+{
+	for (union p_object po: self->parser_objects)
+	{
+	    parser_destroy_object(&po);
+	}
+}
+
+void
+parser_destroy_object(union p_object * self)
+{
+	switch (self->common->type)
+	{
+		case PARSER_KLASS:     { delete self->klass; return;  }
+		case PARSER_FIELD:     { delete self->field; return;  }
+		case PARSER_METHOD:    { delete self->method; return; }
+		case PARSER_ARROW:     { delete self->arrow; return;  }
+		case PARSER_INTERFACE: { delete self->inter; return;  }
+		case PARSER_PACKAGE:   { delete self->package; return;}
+	}
 }
 
 void

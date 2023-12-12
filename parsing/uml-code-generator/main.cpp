@@ -4,6 +4,7 @@
 #include <cstring>
 #include <boost/algorithm/string.hpp>
 
+#include "./arg_parser.h"
 #include "./io.h"
 #include "./lexer.h"
 #include "./parser.h"
@@ -23,19 +24,15 @@
 
 
 int
-main(void)
+main(int argc, char ** argv)
 {
-	std::string file_path = "file.txt";
+	struct arg_parser ap = arg_parser_parse(argc, argv);
+
+	std::string file_path = ap.file_path;
+	/* TODO(tyler): Lex object doesn't need to be malloced */
 	struct lexer * lex = lexer_create(file_path);
 	lexer_lex(lex);
 
-	//for (int i = 0; i < lex->tokens.size();i++)
-	//{
-	//	struct token * t = lex->tokens[i];
-	//	printf("%s\n",token_to_string(t).c_str());
-	//}
-
-	//struct parser * parser = parser_create(lex->tokens);
 	struct parser parser = parser_create(lex->tokens, lex->has_packages);
 	parser_parse(&parser);
 
@@ -44,8 +41,6 @@ main(void)
 
 	writer_write(&gen.klasses);
 
-	//lexer_destroy(lex);
-	delete lex;
-	//parser_destroy(parser);
-	//std::string contents = read_file_as_string(file_path);
+	lexer_destroy(lex);
+	parser_destroy(&parser);
 }

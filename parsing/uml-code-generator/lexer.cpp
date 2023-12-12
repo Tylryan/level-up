@@ -76,6 +76,7 @@ lexer_increment_line(struct lexer * self)
 	self->line++;
 }
 
+/* TODO(tyler): Token objects don't need to be malloced */
 struct token *
 token_create(enum TOKEN_TYPE type, std::string key, std::string value)
 {
@@ -113,7 +114,7 @@ lexer_destroy(struct lexer * self)
 {
 	for (int i = 0; i < self->tokens.size(); i++)
 	{
-		delete self->tokens[i];
+		token_destroy(self->tokens[i]);
 	}
 
 	delete self;

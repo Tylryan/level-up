@@ -95,7 +95,8 @@ struct parser
 };
 
 struct parser parser_create(std::vector<struct token*> tokens, bool has_packages);
-std::vector<struct klass>
-parser_parse(struct parser * self);    
+void parser_destroy(struct parser * parser);
+
+std::vector<struct klass> parser_parse(struct parser * self);    
 
 std::string p_object_to_str(union p_object * po);
