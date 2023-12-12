@@ -1,8 +1,9 @@
-#include "./generator.h"
-#include "parser.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <cstdlib>
 #include <string>
+
+#include "./generator.h"
+#include "parser.h"
 
 void handle_fields(struct generator * self, struct a_array aa, union p_object * k, struct Klass * klass);
 void handle_methods(struct generator * self, struct a_array aa, union p_object * k, struct Klass * klass);
@@ -37,10 +38,10 @@ gen_generate(struct generator * self)
 		struct Klass klass;
 		klass.type = OBJ_INTERFACE;
 		klass.name = k->inter->value;
+		klass.package = k->inter->package;
 
 		handle_relations(self, aa, k, &klass);
 		handle_fields(self, aa, k, &klass);
-		/* TODO(tyler) handle_methods isn't handling interface methods */
 		handle_methods(self, aa, k, &klass);
 
 		klasses.push_back(klass);
@@ -68,11 +69,11 @@ a_array_create(struct generator * self)
 	while (gen_has_next(self))
 	{
 		union p_object * po = gen_peek(self);
-		enum P_TYPE type = po->common->type;
-		if (type == PARSER_KLASS)
-		{
-			array.classes.push_back(po);
-		}
+		enum P_TYPE type    = po->common->type;
+
+		if      (type == PARSER_KLASS)     { array.classes.push_back(po);   }
+		else if (type == PARSER_INTERFACE) { array.interfaces.push_back(po);}
+		else if (type == PARSER_ARROW)     { array.arrows.push_back(po);    }
 		else if (type == PARSER_FIELD)
 		{
 			po->field->value = gen_translate_field(self, po);
@@ -82,14 +83,6 @@ a_array_create(struct generator * self)
 		{
 			po->method->value = gen_translate_method(self, po);
 			array.methods.push_back(po);
-		}
-		else if (type == PARSER_INTERFACE)
-		{
-			array.interfaces.push_back(po);
-		}
-		else if (type == PARSER_ARROW)
-		{
-			array.arrows.push_back(po);
 		}
 		gen_next(self);
 	}
@@ -160,8 +153,9 @@ handle_relations(struct generator * self,
 {
 	for (union p_object * po: aa.arrows)
 	{
-		if (po->arrow->target_id == k->klass->id)
+		if (po->arrow->target_id == k->common->id)
 		{
+			/* IS FINDING A MATCH FOR */
 			union p_object * o = find_p_object(self, po->arrow->source_id);
 
 			if (o == NULL)
@@ -180,7 +174,6 @@ handle_relations(struct generator * self,
 
 			else if (type == PARSER_INTERFACE)
 			{
-				printf("PUSHING INTER: %s\n", o->inter->value.c_str());
 				klass->interfaces.push_back(o->inter->value);
 			}
 		}
@@ -195,7 +188,7 @@ handle_fields(struct generator * self,
 {
 	for (auto po: aa.fields)
 	{
-		if (po->field->pid != k->klass->id)
+		if (po->field->pid != k->common->id)
 		{
 			continue;
 		}
@@ -210,19 +203,10 @@ handle_methods(struct generator * self, struct a_array aa, union p_object * k, s
 {
 	for (auto po: aa.methods)
 	{
-		printf("PID: %s\n", po->common->pid.c_str());
-		if (po->method->pid != k->klass->id)
+		if (po->method->pid != k->common->id)
 		{
-			printf("CLASS NAME: %s\n", k->klass->value.c_str() );
 			continue;
 		}
-
-		else if (po->method->pid != k->inter->id)
-		{
-			printf("INTERFACE NAME: %s\n", k->inter->value.c_str() );
-			continue;
-		}
-
 		klass->methods.push_back(po->method->value);
 	}
 }
@@ -236,9 +220,6 @@ find_p_object(struct generator * self, std::string id)
 	while (gen_has_next(self))
 	{
 		union p_object * co = gen_peek(self);
-		//printf("SEARCHING: %s for %s\n",
-		//co->common->id.c_str(),
-		//      id.c_str());
 
 		if (co->common->id == id)
 		{
@@ -431,11 +412,6 @@ gen_translate_method(struct generator * self, union p_object * field)
 
 	    j++;
 	}
-
-
-	/* TODO(tyler): method return value */
-
-
 
 	res.push_back(')');
 	return res;

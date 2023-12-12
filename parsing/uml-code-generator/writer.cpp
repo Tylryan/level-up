@@ -1,11 +1,13 @@
-#include "./writer.h"
-#include "generator.h"
 #include <cstdio>
 #include <stdlib.h>
 #include <vector>
 #include <sys/stat.h>
+#include <format>
 
+#include "./writer.h"
+#include "./generator.h"
 
+/* Private functions */
 void writer_write_sig(FILE * fptr, struct Klass * k);
 void writer_write_fields(FILE * fptr, struct Klass * k);
 std::string writer_get_ret_val(std::string method_sig);
@@ -14,19 +16,15 @@ FILE * writer_create_file(struct Klass * k);
 void writer_close_file(FILE * fptr);
 void writer_end(FILE * fptr);
 void writer_mkdir(std::string dir_name);
+void writer_mkdirs(struct Klass * klass);
+std::string writer_replace(std::string s, char o, char n);
 
-void
-writer_mkdirs(struct Klass * klass)
-{
-	/* TODO(tyler) Implement */
-}    
 
 void
 writer_write(std::vector<Klass> * Klasses )
 {
-	writer_mkdir("src");
-
 	/* TODO(tyler) if no package, just put it in 'src' */
+	writer_mkdir("src");
 	for (int i = 0; i < Klasses->size(); i++)
 	{
 		struct Klass k = Klasses->at(i);
@@ -63,7 +61,6 @@ writer_write_sig(FILE * fptr, struct Klass * k)
 	{
 		for (int i = 1; i < k->interfaces.size();i++)
 		{
-			printf("INTERFACE: %s\n", k->interfaces[i].c_str());
 			fprintf(fptr, ", %s", k->interfaces[i].c_str());
 		}
 	}
@@ -122,7 +119,6 @@ writer_write_methods(FILE * fptr, struct Klass * k)
 		}
 		else if(k->type == OBJ_INTERFACE)
 		{
-			/* TODO(tyler) never reaches here */
 			fprintf(fptr, "    %s;\n", method_sig.c_str());
 		}
 	}
@@ -131,7 +127,10 @@ writer_write_methods(FILE * fptr, struct Klass * k)
 FILE *
 writer_create_file(struct Klass * k)
 {
-	std::string file_name = "src/" + k->name + ".java";
+	std::string p_path = writer_replace(k->package, '.', '/');
+	p_path.push_back('/');
+	std::string file_name = "src/" + p_path + k->name + ".java";
+
 	FILE * fptr;
 	fptr = fopen(file_name.c_str(), "w");
 	return fptr;
@@ -158,3 +157,38 @@ writer_mkdir(std::string dir_name)
 		fprintf(stdout, "[info] failed to create src dir\n");
 	}
 }
+
+std::string
+writer_replace(std::string s, char o, char n)
+{
+	std::string res = std::string();
+	for (int i = 0; i < s.size();i++)
+	{
+		if (s[i] == o)
+		{
+			res.push_back(n);
+			continue;
+		}
+		res.push_back(s[i]);
+	}
+	
+	return res;
+}
+    
+void
+writer_mkdirs(struct Klass * klass)
+{
+	std::string p_path = writer_replace(klass->package, '.', '/');
+	p_path.push_back('/');
+
+	int i = 0, j = 0;
+	while (j <= p_path.size())
+	{
+		if (p_path[j] == '/')
+		{
+			std::string d_path = "src/" + p_path.substr(i, j - i);
+			writer_mkdir(d_path);
+		}
+		j++;
+	}
+}    

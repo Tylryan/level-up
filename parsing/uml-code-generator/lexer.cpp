@@ -11,6 +11,22 @@
 #define KB 1024
 #define MB KB * KB
 
+/* Private functions */
+bool lexer_is_at_end(struct lexer * self);
+bool lexer_skip(struct lexer * self, int times);
+void lexer_add_token(struct lexer * self, struct token * t);
+bool lexer_next(struct lexer * self);
+struct token * lexer_create_token(struct lexer * self, std::string var, std::string val);
+void lexer_set_curr_word(struct lexer * self, std::string word);
+void lexer_skip_line(struct lexer * self);
+void lexer_skip_until(struct lexer * self, char c);
+void lexer_consume_string(struct lexer * self);
+void lexer_handle_mxCell(struct lexer * self);
+char lexer_peek(struct lexer * self);
+char lexer_peek_next(struct lexer * self);
+bool lexer_has_next(struct lexer * self);
+void lexer_increment_line(struct lexer * self);
+
 void
 lexer_lex(struct lexer *self)
 {
@@ -33,8 +49,8 @@ lexer_lex(struct lexer *self)
 		}
 
 
-		bool is_mxCell = "<mxCell" == self->current_word;
-		bool is_object_cell =  "<object" == self->current_word;
+		bool is_mxCell      = "<mxCell" == self->current_word;
+		bool is_object_cell = "<object" == self->current_word;
 
 		if (is_mxCell || is_object_cell)
 		{
@@ -83,11 +99,11 @@ lexer_create(std::string file_path)
 	std::string contents = read_file_as_string(file_path);
 
 	struct lexer * l = new lexer();
-	l->current = 0;
-	l->start   = 0;
-	l->text    = contents;
-	l->line    = 1;
-	l->file_path = file_path;
+	l->current      = 0;
+	l->start        = 0;
+	l->text         = contents;
+	l->line         = 1;
+	l->file_path    = file_path;
 	l->has_packages = false;
 	return l;
 };
@@ -205,6 +221,7 @@ lexer_create_token(struct lexer * self, std::string var, std::string val)
 			boost::trim(val);
 			return token_create(TOKEN_CLASS, var, val);
 		}
+
 		if (is_interface)
 		{
 			val = val.substr(val.find(":")+1);

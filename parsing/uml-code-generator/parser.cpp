@@ -1,4 +1,3 @@
-
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
@@ -7,6 +6,7 @@
 #include "./parser.h"
 #include "./lexer.h"
 
+/* Private functions */
 struct parser parser_create(std::vector<struct token*> tokens, bool has_packages);
 struct token * parser_peek(struct parser *self);
 struct token * parser_peek_next(struct parser * self);
@@ -28,28 +28,14 @@ parser_parse(struct parser * self)
 	
 	while (parser_has_next(self))
 	{
-		current_token = parser_peek(self);
+		current_token        = parser_peek(self);
+		enum TOKEN_TYPE type = current_token->type;
 
-		if (current_token->type == TOKEN_CLASS)
-		{
-			parser_parse_class(self);
-		}
-		else if (current_token->type == TOKEN_FIELD)
-		{
-			parser_parse_field(self);
-		}
-		else if (current_token->type == TOKEN_METHOD)
-		{
-			parser_parse_method(self);
-		}
-		else if (current_token->type == TOKEN_INTERFACE)
-		{
-			parser_parse_interface(self);
-		}
-		else if (current_token->type == TOKEN_ARROW)
-		{
-			parser_parse_arrow(self);
-		}
+		if      (type == TOKEN_CLASS)    { parser_parse_class(self);    }
+		else if (type == TOKEN_FIELD)    { parser_parse_field(self);    }
+		else if (type == TOKEN_METHOD)   { parser_parse_method(self);   }
+		else if (type == TOKEN_INTERFACE){ parser_parse_interface(self);}
+		else if (type == TOKEN_ARROW)    { parser_parse_arrow(self);    }
 
 		parser_next(self);
 	}
@@ -61,7 +47,6 @@ void
 parser_parse_class(struct parser * self)
 {
 	struct token * current_token = parser_peek(self);
-	struct token * prev_token    = parser_peek_prev(self);
 
 	struct klass * k = new klass();
 	k->type  = PARSER_KLASS;
@@ -120,11 +105,28 @@ parser_parse_method(struct parser * self)
 	struct method * m = new method();
 	m->type  = PARSER_METHOD;
 	m->value = current_token->value;
-	m->id    = parser_peek_prev(self)->value;
 
-	/* Skip the style token */
-	parser_skip(self, 2);
-	m->pid = parser_peek(self)->value;
+	enum P_TYPE prev_object_type = self->parser_objects
+		.back()
+		.common
+		->type;
+
+	if (prev_object_type == PARSER_INTERFACE)
+	{
+	    parser_skip(self, 2);
+	    m->id    = parser_peek(self)->value;
+	    parser_skip(self, 2);
+	    m->pid = parser_peek(self)->value;
+	}
+
+	else
+	{
+	    m->id = parser_peek_prev(self)->value;
+	    /* Skip the style token */
+	    parser_skip(self, 2);
+	    m->pid = parser_peek(self)->value;
+	}
+
 
 	/* TODO(tyler) need to free these */
 	union p_object po = {.method = m};
