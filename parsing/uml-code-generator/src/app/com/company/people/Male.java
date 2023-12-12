@@ -1,3 +1,5 @@
+package app.com.company.people;
+
 public class Male implements Person {
     public String name;
     private String ssn;

@@ -1,3 +1,5 @@
+package app.com.company.courses;
+
 public class Biology implements Person, Course {
     public Person person;
 

@@ -10,15 +10,15 @@
 /* Private functions */
 void writer_write_sig(FILE * fptr, struct Klass * k);
 void writer_write_fields(FILE * fptr, struct Klass * k);
-std::string writer_get_ret_val(std::string method_sig);
 void writer_write_methods(FILE * fptr, struct Klass * k);
+void writer_write_package(FILE * fptr, struct Klass * k);
+std::string writer_get_ret_val(std::string method_sig);
 FILE * writer_create_file(struct Klass * k);
 void writer_close_file(FILE * fptr);
 void writer_end(FILE * fptr);
 void writer_mkdir(std::string dir_name);
 void writer_mkdirs(struct Klass * klass);
 std::string writer_replace(std::string s, char o, char n);
-
 
 void
 writer_write(std::vector<Klass> * Klasses )
@@ -31,11 +31,18 @@ writer_write(std::vector<Klass> * Klasses )
 
 		writer_mkdirs(&k);
 		FILE * fptr = writer_create_file(&k);
+		writer_write_package(fptr, &k);
 		writer_write_sig(fptr, &k);
 		writer_write_fields(fptr, &k);
 		writer_write_methods(fptr, &k);
 		writer_end(fptr);
 	}
+}
+
+void
+writer_write_package(FILE * fptr, struct Klass * k)
+{
+	fprintf(fptr, "package %s;\n\n", k->package.c_str());
 }
 
 void

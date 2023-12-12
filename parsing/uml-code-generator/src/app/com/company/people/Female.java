@@ -1,3 +1,5 @@
+package app.com.company.people;
+
 public class Female implements Person {
     public String name;
     int age;
