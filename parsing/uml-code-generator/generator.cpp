@@ -169,12 +169,12 @@ handle_relations(struct generator * self,
 			if (type == PARSER_KLASS)
 			{
 				/* TODO(tyler): NEVER REACHES HERE */
-				klass->interfaces.push_back(o->klass->value);
+				//klass->interfaces.push_back(o->klass);
 			}
 
 			else if (type == PARSER_INTERFACE)
 			{
-				klass->interfaces.push_back(o->inter->value);
+				klass->interfaces.push_back(o->inter);
 			}
 		}
 	}
@@ -193,7 +193,7 @@ handle_fields(struct generator * self,
 			continue;
 		}
 
-		klass->fields.push_back(po->field->value);
+		klass->fields.push_back(po->field);
 	}
 }
 
@@ -207,7 +207,7 @@ handle_methods(struct generator * self, struct a_array aa, union p_object * k, s
 		{
 			continue;
 		}
-		klass->methods.push_back(po->method->value);
+		klass->methods.push_back(po->method);
 	}
 }
 

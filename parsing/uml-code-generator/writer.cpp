@@ -42,7 +42,16 @@ writer_write(std::vector<Klass> * Klasses )
 void
 writer_write_package(FILE * fptr, struct Klass * k)
 {
-	fprintf(fptr, "package %s;\n\n", k->package.c_str());
+	fprintf(fptr, "package %s;\n", k->package.c_str());
+	for (int i = 0; i < k->interfaces.size(); i++)
+	{
+		fprintf(fptr,
+			"package %s.%s;\n",
+			k->interfaces[i]->package.c_str(),
+			k->interfaces[i]->value.c_str());
+	}
+
+	fprintf(fptr, "\n\n");
 }
 
 void
@@ -61,14 +70,14 @@ writer_write_sig(FILE * fptr, struct Klass * k)
 
 	if (k->interfaces.size() > 0)
 	{
-		fprintf(fptr, " implements %s", k->interfaces[0].c_str());
+		fprintf(fptr, " implements %s", k->interfaces[0]->value.c_str());
 	}
 
 	if (k->interfaces.size() > 1)
 	{
 		for (int i = 1; i < k->interfaces.size();i++)
 		{
-			fprintf(fptr, ", %s", k->interfaces[i].c_str());
+			fprintf(fptr, ", %s", k->interfaces[i]->value.c_str());
 		}
 	}
 	fprintf(fptr, " {\n");
@@ -79,7 +88,7 @@ writer_write_fields(FILE * fptr, struct Klass * k)
 {
 	for (int i = 0; i < k->fields.size();i++)
 	{
-		fprintf(fptr, "    %s\n", k->fields[i].c_str());
+		fprintf(fptr, "    %s\n", k->fields[i]->value.c_str());
 	}
 	fprintf(fptr, "\n");
 }
@@ -116,7 +125,7 @@ writer_write_methods(FILE * fptr, struct Klass * k)
 {
 	for (int i = 0; i < k->methods.size();i++)
 	{
-		std::string method_sig = k->methods[i];
+		std::string method_sig = k->methods[i]->value;
 		if (k->type == OBJ_KLASS)
 		{
 			fprintf(fptr, "    %s {\n", method_sig.c_str());
