@@ -12,6 +12,7 @@ void writer_write_sig(FILE * fptr, struct Klass * k);
 void writer_write_fields(FILE * fptr, struct Klass * k);
 void writer_write_methods(FILE * fptr, struct Klass * k);
 void writer_write_package(FILE * fptr, struct Klass * k);
+void writer_write_imports(FILE * fptr, struct Klass * k);
 std::string writer_get_ret_val(std::string method_sig);
 FILE * writer_create_file(struct Klass * k);
 void writer_close_file(FILE * fptr);
@@ -32,6 +33,7 @@ writer_write(std::vector<Klass> * Klasses )
 		writer_mkdirs(&k);
 		FILE * fptr = writer_create_file(&k);
 		writer_write_package(fptr, &k);
+		writer_write_imports(fptr, &k);
 		writer_write_sig(fptr, &k);
 		writer_write_fields(fptr, &k);
 		writer_write_methods(fptr, &k);
@@ -42,15 +44,19 @@ writer_write(std::vector<Klass> * Klasses )
 void
 writer_write_package(FILE * fptr, struct Klass * k)
 {
-	fprintf(fptr, "package %s;\n", k->package.c_str());
+	fprintf(fptr, "package %s;\n\n", k->package.c_str());
+}
+
+void
+writer_write_imports(FILE * fptr, struct Klass * k)
+{
 	for (int i = 0; i < k->interfaces.size(); i++)
 	{
 		fprintf(fptr,
-			"package %s.%s;\n",
+			"import %s.%s;\n",
 			k->interfaces[i]->package.c_str(),
 			k->interfaces[i]->value.c_str());
 	}
-
 	fprintf(fptr, "\n\n");
 }
 
