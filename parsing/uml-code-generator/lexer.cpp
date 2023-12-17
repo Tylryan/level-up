@@ -196,12 +196,26 @@ lexer_create_token(struct lexer * self, std::string var, std::string val)
 		return token_create(TOKEN_PARENT, var, val);
 	else if (var == "style")
 	{
-		if (strstr(val.c_str(), "edgeStyle"))
+		/* Relation arrow */
+		if (strstr(val.c_str(), "endArrow=block"))
 		{
-		    return token_create(TOKEN_ARROW, var, val);
+			return token_create(TOKEN_ARROW_REL, var, val);
+		}
+		/* Composition arrow */
+		else if (strstr(val.c_str(), "endArrow=open"))
+		{
+			return token_create(TOKEN_ARROW_COMP, var, val);
+		}
+		/* Any other arrow */
+		else if (strstr(val.c_str(), "edgeStyle"))
+		{
+			return token_create(TOKEN_ARROW, var, val);
+		}
+		else
+		{
+		    return token_create(TOKEN_STYLE, var, val);
 		}
 		
-		return token_create(TOKEN_STYLE, var, val);
 	}
 	else if (var == "source")
 		return token_create(TOKEN_SOURCE, var, val);
@@ -246,17 +260,17 @@ lexer_create_token(struct lexer * self, std::string var, std::string val)
 		    return token_create(TOKEN_FIELD, var, val);
 		}
 
-		else if (val != "")
-		{
-			fprintf(stdout,
-				"[error] invalid field or method. "
-				"missing access modifier.\n"
-				"    line %lu: %s\n",
-				self->line,
-				val.c_str());
+		//else if (val != "")
+		//{
+		//	fprintf(stdout,
+		//		"[error] invalid field or method. "
+		//		"missing access modifier.\n"
+		//		"    line %lu: %s\n",
+		//		self->line,
+		//		val.c_str());
 
-			exit(EXIT_FAILURE);
-		}
+		//	exit(EXIT_FAILURE);
+		//}
 
 		return token_create(TOKEN_VALUE, var, val);
 	}
@@ -380,18 +394,21 @@ token_type_to_string(enum TOKEN_TYPE type)
 {
 	switch (type)
 	{
-	        case TOKEN_CLASS:     { return "TOKEN_CLASS";        }
-	        case TOKEN_INTERFACE: { return "TOKEN_INTERFACE";    }
-	        case TOKEN_ID:        { return "TOKEN_ID";           }
-	        case TOKEN_STYLE:     { return "TOKEN_STYLE";        }
-	        case TOKEN_PARENT:    { return "TOKEN_PARENT";       }
-	        case TOKEN_VALUE:     { return "TOKEN_VALUE";        }
-	        case TOKEN_SOURCE:    { return "TOKEN_SOURCE";       }
-	        case TOKEN_TARGET:    { return "TOKEN_TARGET";       }
-	        case TOKEN_ARROW:     { return "TOKEN_ARROW";        }
-	        case TOKEN_FIELD:     { return "TOKEN_FIELD";        }
-	        case TOKEN_METHOD:    { return "TOKEN_METHOD";       }
-	        case TOKEN_PACKAGE:   { return "TOKEN_PACKAGE";      }
+	        case TOKEN_CLASS:     { return "TOKEN_CLASS";      }
+	        case TOKEN_INTERFACE: { return "TOKEN_INTERFACE";  }
+	        case TOKEN_ID:        { return "TOKEN_ID";         }
+	        case TOKEN_STYLE:     { return "TOKEN_STYLE";      }
+	        case TOKEN_PARENT:    { return "TOKEN_PARENT";     }
+	        case TOKEN_VALUE:     { return "TOKEN_VALUE";      }
+	        case TOKEN_SOURCE:    { return "TOKEN_SOURCE";     }
+	        case TOKEN_TARGET:    { return "TOKEN_TARGET";     }
+	        case TOKEN_FIELD:     { return "TOKEN_FIELD";      }
+	        case TOKEN_METHOD:    { return "TOKEN_METHOD";     }
+	        case TOKEN_PACKAGE:   { return "TOKEN_PACKAGE";    }
+	        case TOKEN_ARROW:     { return "TOKEN_ARROW";      }
+	        case TOKEN_ARROW_REL: { return "TOKEN_ARROW_REL";  }
+	        case TOKEN_ARROW_COMP:{ return "TOKEN_ARROW_COMP"; }
+
 		default:              { return "INVALID TOKEN TYPE"; }
 	}
 }

@@ -33,6 +33,7 @@ gen_generate(struct generator * self)
 
 	for (int i = 0; i < aa.interfaces.size(); i++)
 	{
+		printf("\n\nparser: HANDLING INTERFACES\n");
 		union p_object * k = aa.interfaces[i];
 
 		struct Klass klass;
@@ -74,6 +75,8 @@ a_array_create(struct generator * self)
 		if      (type == PARSER_KLASS)     { array.classes.push_back(po);   }
 		else if (type == PARSER_INTERFACE) { array.interfaces.push_back(po);}
 		else if (type == PARSER_ARROW)     { array.arrows.push_back(po);    }
+		else if (type == PARSER_ARROW_REL) { array.arrows.push_back(po);    }
+		else if (type == PARSER_ARROW_COMP){ array.arrows.push_back(po);    }
 		else if (type == PARSER_FIELD)
 		{
 			po->field->value = gen_translate_field(self, po);
@@ -84,6 +87,7 @@ a_array_create(struct generator * self)
 			po->method->value = gen_translate_method(self, po);
 			array.methods.push_back(po);
 		}
+		/* These are probably arrows */
 		gen_next(self);
 	}
 
@@ -145,37 +149,80 @@ gen_set_cindex(struct generator * self, size_t index)
 	self->current = index;
 }
 
+/*
+  ARROW: Target should be the object being pointed to
+  ARROW_REL: Target should be the object being inherited
+  ARROW_COMP: Target should be the object being used
+*/
 void
 handle_relations(struct generator * self,
 		 struct a_array aa      ,
 		 union p_object * k     ,
 		 struct Klass * klass)
 {
-	for (union p_object * po: aa.arrows)
+	printf("parser: AA.ARROWS SIZE: %lu\n", aa.arrows.size());
+	for (union p_object * ao: aa.arrows)
 	{
-		if (po->arrow->target_id == k->common->id)
+
+		printf("\n\nparser: HANDLING RELATIONS\n");
+
+		std::string klass_id = k->common->id;
+		P_TYPE atype = ao->common->type;
+		union p_object * o;
+
+		if (atype == PARSER_ARROW){
+			if (ao->arrow_gen->source_id == klass_id)
+			{
+			    o = find_p_object(self, ao->arrow_gen->target_id);
+			}
+			else {continue;}
+		}
+		else if (atype == PARSER_ARROW_COMP)
 		{
-			/* IS FINDING A MATCH FOR */
-			union p_object * o = find_p_object(self, po->arrow->source_id);
-
-			if (o == NULL)
+			if (ao->arrow_comp->source_id == klass_id)
 			{
-				printf("[info] generator.handle_relations() - could not find matching relation\n");
-				continue;
+			    o = find_p_object(self, ao->arrow_comp->target_id);
 			}
-
-			enum P_TYPE type = o->common->type;
-
-			if (type == PARSER_KLASS)
+			else {continue;}
+		}
+		else if (atype == PARSER_ARROW_REL)
+		{
+			if (ao->arrow_rel->source_id == klass_id)
 			{
-				/* TODO(tyler): NEVER REACHES HERE */
-				//klass->interfaces.push_back(o->klass);
+			    o = find_p_object(self, ao->arrow_rel->target_id);
 			}
+			else {continue;}
+		}
+		else { continue; }
 
-			else if (type == PARSER_INTERFACE)
-			{
-				klass->interfaces.push_back(o->inter);
-			}
+		if (o == NULL)
+		{
+			printf("[info] generator.handle_relations() - could not find matching relation\n");
+			continue;
+		}
+
+		enum P_TYPE otype = o->common->type;
+		/* Find the class for the method/field */
+		if (otype == PARSER_METHOD || otype == PARSER_FIELD)
+		{
+			o = find_p_object(self, o->common->pid);
+			otype = o->common->type;
+		}
+
+		if (otype == PARSER_KLASS)
+		{
+			/* TODO(tyler): NEVER REACHES HERE */
+			//klass->interfaces.push_back(o->klass);
+		}
+
+		else if (otype == PARSER_INTERFACE)
+		{
+			printf("parser: FOUND INTERFACE\n");
+			klass->interfaces.push_back(o->inter);
+		}
+		else
+		{
+			printf("parser: FOUND: %s\n", p_object_to_str(o).c_str());
 		}
 	}
 }
@@ -211,6 +258,7 @@ handle_methods(struct generator * self, struct a_array aa, union p_object * k, s
 	}
 }
 
+/* Find a p_object with the specified id */
 union p_object *
 find_p_object(struct generator * self, std::string id)
 {
@@ -230,12 +278,14 @@ find_p_object(struct generator * self, std::string id)
 		gen_next(self);
 	}
 
-	printf("[info] generator.find_p_object() - did not find a match\n");
+	printf("[info] generator.find_p_object() - did not find a match for '%s'\n",
+	       id.c_str());
 
 	gen_set_cindex(self, og_index);
 	return NULL;
 }
 
+/* TODO(tyler) make this more readable */
 std::string
 gen_translate_field(struct generator *self,  union p_object *field)
 {
@@ -290,6 +340,7 @@ gen_translate_field(struct generator *self,  union p_object *field)
 	return res;
 }    
 
+/* TODO(tyler) Make this more readable */
 std::string
 gen_translate_method(struct generator * self, union p_object * field)
 {

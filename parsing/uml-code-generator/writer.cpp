@@ -174,9 +174,9 @@ writer_end(FILE * fptr)
 void
 writer_mkdir(std::string dir_name)
 {
-	if (mkdir(dir_name.c_str(), 0777) < 0)
+	if (mkdir(dir_name.c_str(), 0777) < 0 && dir_name != "src")
 	{
-		fprintf(stdout, "[info] failed to create src dir\n");
+		//fprintf(stdout, "[info] failed to create %s dir\n", dir_name.c_str());
 	}
 }
 

@@ -8,12 +8,14 @@
 
 enum P_TYPE
 {
-	PARSER_INTERFACE,
-	PARSER_KLASS,
-	PARSER_METHOD,
-	PARSER_ARROW,
-	PARSER_FIELD,
-	PARSER_PACKAGE
+	PARSER_INTERFACE ,
+	PARSER_KLASS     ,
+	PARSER_METHOD    ,
+	PARSER_FIELD     ,
+	PARSER_PACKAGE   ,
+	PARSER_ARROW_COMP,
+	PARSER_ARROW_REL ,
+	PARSER_ARROW
 };
 
 struct klass
@@ -58,7 +60,7 @@ struct method
 	std::string value;
 };
 
-struct arrow
+struct arrow_comp
 {
 	enum P_TYPE type;
 	std::string id;
@@ -67,6 +69,32 @@ struct arrow
 	std::string target_id;
 };
 
+struct arrow_rel
+{
+	enum P_TYPE type;
+	std::string id;
+	std::string pid;
+	std::string source_id;
+	std::string target_id;
+};
+
+struct arrow_gen
+{
+	enum P_TYPE type;
+	std::string id;
+	std::string pid;
+	std::string source_id;
+	std::string target_id;
+};
+
+struct arrow_com
+{
+	enum P_TYPE type;
+	std::string id;
+	std::string pid;
+	std::string source_id;
+	std::string target_id;
+};
 
 struct common
 {
@@ -77,13 +105,15 @@ struct common
 
 union p_object
 {
-	struct common * common;
-	struct klass  * klass;
-	struct field  * field;
-	struct method * method;
-	struct arrow  * arrow;
-	struct inter  * inter;
-	struct package * package;
+	struct common      * common;
+	struct klass       * klass;
+	struct field       * field;
+	struct method      * method;
+	struct inter       * inter;
+	struct package     * package;
+	struct arrow_gen   * arrow_gen;
+	struct arrow_rel   * arrow_rel;
+	struct arrow_comp  * arrow_comp;
 };
 
 struct parser

@@ -22,7 +22,9 @@ void parser_parse_class(struct parser * self);
 void parser_parse_field(struct parser * self);
 void parser_parse_method(struct parser * self);
 void parser_parse_interface(struct parser * self);
-void parser_parse_arrow(struct parser * self);
+void parser_parse_arrow(struct parser * self, enum TOKEN_TYPE arrow_type);
+void parser_parse_arrow_comp(struct parser * self, enum TOKEN_TYPE arrow_type);
+void parser_parse_arrow_rel(struct parser * self, enum TOKEN_TYPE arrow_type);
 
 std::vector<struct klass>
 parser_parse(struct parser * self)
@@ -34,11 +36,13 @@ parser_parse(struct parser * self)
 		current_token        = parser_peek(self);
 		enum TOKEN_TYPE type = current_token->type;
 
-		if      (type == TOKEN_CLASS)    { parser_parse_class(self);    }
-		else if (type == TOKEN_FIELD)    { parser_parse_field(self);    }
-		else if (type == TOKEN_METHOD)   { parser_parse_method(self);   }
-		else if (type == TOKEN_INTERFACE){ parser_parse_interface(self);}
-		else if (type == TOKEN_ARROW)    { parser_parse_arrow(self);    }
+		if      (type == TOKEN_CLASS)     { parser_parse_class(self);           }
+		else if (type == TOKEN_FIELD)     { parser_parse_field(self);           }
+		else if (type == TOKEN_METHOD)    { parser_parse_method(self);          }
+		else if (type == TOKEN_INTERFACE) { parser_parse_interface(self);       }
+		else if (type == TOKEN_ARROW)     { parser_parse_arrow(self, type);     }
+		else if (type == TOKEN_ARROW_REL) { parser_parse_arrow_rel(self, type); }
+		else if (type == TOKEN_ARROW_COMP){ parser_parse_arrow_comp(self, type);}
 
 		parser_next(self);
 	}
@@ -60,12 +64,14 @@ parser_destroy_object(union p_object * self)
 {
 	switch (self->common->type)
 	{
-		case PARSER_KLASS:     { delete self->klass; return;  }
-		case PARSER_FIELD:     { delete self->field; return;  }
-		case PARSER_METHOD:    { delete self->method; return; }
-		case PARSER_ARROW:     { delete self->arrow; return;  }
-		case PARSER_INTERFACE: { delete self->inter; return;  }
-		case PARSER_PACKAGE:   { delete self->package; return;}
+		case PARSER_KLASS:     { delete self->klass; return;     }
+		case PARSER_FIELD:     { delete self->field; return;     }
+		case PARSER_METHOD:    { delete self->method; return;    }
+		case PARSER_INTERFACE: { delete self->inter; return;     }
+		case PARSER_PACKAGE:   { delete self->package; return;   }
+		case PARSER_ARROW:     { delete self->arrow_gen; return;     }
+		case PARSER_ARROW_COMP:{ delete self->arrow_comp; return;}
+		case PARSER_ARROW_REL: { delete self->arrow_rel; return; }
 	}
 }
 
@@ -198,24 +204,82 @@ parser_parse_interface(struct parser * self)
 	self->parser_objects.push_back(po);
 }
 
+/* I know an arrow should probably be a union */
 void
-parser_parse_arrow(struct parser * self)
+parser_parse_arrow(struct parser * self, enum TOKEN_TYPE arrow_type)
 {
 	struct token * current_token = parser_peek(self);
 	struct token * prev_token    = parser_peek_prev(self);
 
-	struct arrow * a = new arrow();
-	a->type      = PARSER_ARROW;
-	a->id        = parser_peek_prev(self)->value;
-	a->source_id = parser_peek_at(self, 2)->value;
-	a->target_id = parser_peek_at(self, 3)->value;
+	struct arrow_gen * ag = new arrow_gen();
+	std::string id        = parser_peek_prev(self)->value;
+	std::string source_id = parser_peek_at(self, 2)->value;
+	std::string target_id = parser_peek_at(self, 3)->value;
 
 	/* Skip the style token */
 	parser_skip(self, 2);
-	a->pid = parser_peek(self)->value;
+	std::string pid = parser_peek(self)->value;
 
-	/* TODO(tyler) need to free these */
-	union p_object po = {.arrow = a};
+	ag->type      = PARSER_ARROW;
+	ag->id        = id;
+	ag->pid       = pid;
+	ag->source_id = source_id;
+	ag->target_id = target_id;
+
+	union p_object po = {.arrow_gen = ag};
+
+	self->parser_objects.push_back(po);
+}
+
+void
+parser_parse_arrow_comp(struct parser * self, enum TOKEN_TYPE arrow_type)
+{
+	struct token * current_token = parser_peek(self);
+	struct token * prev_token    = parser_peek_prev(self);
+
+	struct arrow_comp * ac = new arrow_comp();
+
+	std::string id        = parser_peek_prev(self)->value;
+	std::string source_id = parser_peek_at(self, 2)->value;
+	std::string target_id = parser_peek_at(self, 3)->value;
+
+	/* Skip the style token */
+	parser_skip(self, 2);
+	std::string pid = parser_peek(self)->value;
+
+	ac->type      = PARSER_ARROW_COMP;
+	ac->id        = id;
+	ac->pid       = pid;
+	ac->source_id = source_id;
+	ac->target_id = target_id;
+
+	union p_object po = {.arrow_comp = ac};
+
+	self->parser_objects.push_back(po);
+}
+
+void
+parser_parse_arrow_rel(struct parser * self, enum TOKEN_TYPE arrow_type)
+{
+	struct token * current_token = parser_peek(self);
+	struct token * prev_token    = parser_peek_prev(self);
+
+	struct arrow_rel * ar = new arrow_rel();
+	std::string id        = parser_peek_prev(self)->value;
+	std::string source_id = parser_peek_at(self, 2)->value;
+	std::string target_id = parser_peek_at(self, 3)->value;
+
+	/* Skip the style token */
+	parser_skip(self, 2);
+	std::string pid = parser_peek(self)->value;
+
+	ar->type      = PARSER_ARROW_REL;
+	ar->id        = id;
+	ar->pid       = pid;
+	ar->source_id = source_id;
+	ar->target_id = target_id;
+
+	union p_object po = {.arrow_rel = ar};
 
 	self->parser_objects.push_back(po);
 }
@@ -332,10 +396,28 @@ p_object_to_str(union p_object * po)
 	case PARSER_ARROW:
 	{
 		sprintf(buff, "ARROW: id: %s, pid: %s, source: %s, target: %s",
-			po->arrow->id.c_str(),
-			po->arrow->pid.c_str(),
-			po->arrow->source_id.c_str(),
-			po->arrow->target_id.c_str());
+			po->arrow_gen->id.c_str(),
+			po->arrow_gen->pid.c_str(),
+			po->arrow_gen->source_id.c_str(),
+			po->arrow_gen->target_id.c_str());
+		break;
+	}
+	case PARSER_ARROW_REL:
+	{
+		sprintf(buff, "ARROW_REL: id: %s, pid: %s, source: %s, target: %s",
+			po->arrow_rel->id.c_str(),
+			po->arrow_rel->pid.c_str(),
+			po->arrow_rel->source_id.c_str(),
+			po->arrow_rel->target_id.c_str());
+		break;
+	}
+	case PARSER_ARROW_COMP:
+	{
+		sprintf(buff, "ARROW_COMP: id: %s, pid: %s, source: %s, target: %s",
+			po->arrow_comp->id.c_str(),
+			po->arrow_comp->pid.c_str(),
+			po->arrow_comp->source_id.c_str(),
+			po->arrow_comp->target_id.c_str());
 		break;
 	}
 	default:
