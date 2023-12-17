@@ -50,12 +50,12 @@ writer_write_package(FILE * fptr, struct Klass * k)
 void
 writer_write_imports(FILE * fptr, struct Klass * k)
 {
-	for (int i = 0; i < k->interfaces.size(); i++)
+	for (int i = 0; i < k->imports.size(); i++)
 	{
 		fprintf(fptr,
 			"import %s.%s;\n",
-			k->interfaces[i]->package.c_str(),
-			k->interfaces[i]->value.c_str());
+			k->package.c_str(),
+			k->imports[i]->value.c_str());
 	}
 	fprintf(fptr, "\n\n");
 }

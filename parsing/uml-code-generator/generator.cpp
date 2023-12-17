@@ -149,6 +149,9 @@ gen_set_cindex(struct generator * self, size_t index)
 	self->current = index;
 }
 
+void handle_arrows_gen();
+void handle_arrows_rel();
+void handle_arrows_comp();
 /*
   ARROW: Target should be the object being pointed to
   ARROW_REL: Target should be the object being inherited
@@ -179,11 +182,16 @@ handle_relations(struct generator * self,
 		}
 		else if (atype == PARSER_ARROW_COMP)
 		{
-			if (ao->arrow_comp->source_id == klass_id)
+			/* compare the source_id with this object's parent */
+			union p_object * obj = find_p_object(self, ao->arrow_comp->source_id);
+			union p_object * parent_obj = find_p_object(self, obj->common->pid);
+
+			if (parent_obj->common->id != k->common->id)
 			{
-			    o = find_p_object(self, ao->arrow_comp->target_id);
+				continue;
 			}
-			else {continue;}
+				
+			o = find_p_object(self, ao->arrow_comp->target_id);
 		}
 		else if (atype == PARSER_ARROW_REL)
 		{
@@ -205,7 +213,12 @@ handle_relations(struct generator * self,
 		/* Find the class for the method/field */
 		if (otype == PARSER_METHOD || otype == PARSER_FIELD)
 		{
+			/* Find parent object */
 			o = find_p_object(self, o->common->pid);
+			if (otype == PARSER_FIELD)
+			{
+			    klass->imports.push_back(o->package);
+			}
 			otype = o->common->type;
 		}
 
@@ -219,11 +232,9 @@ handle_relations(struct generator * self,
 		{
 			printf("parser: FOUND INTERFACE\n");
 			klass->interfaces.push_back(o->inter);
+			klass->imports.push_back(o->package);
 		}
-		else
-		{
-			printf("parser: FOUND: %s\n", p_object_to_str(o).c_str());
-		}
+
 	}
 }
 
