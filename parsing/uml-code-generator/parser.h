@@ -25,6 +25,7 @@ struct klass
 	std::string pid;
 	std::string value;
 	std::string package;
+	std::string import_path;
 };
 
 struct inter
@@ -34,6 +35,7 @@ struct inter
 	std::string pid;
 	std::string value;
 	std::string package;
+	std::string import_path;
 };
 
 struct package

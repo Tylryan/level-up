@@ -186,6 +186,10 @@ parser_parse_interface(struct parser * self)
 	{
 		parser_next(self);
 		i->package = parser_peek(self)->value;
+		std::string import_path = i->package;
+		import_path.append(".");
+		import_path.append(i->value);
+		i->import_path = import_path;
 		parser_next(self);
 		i->id = parser_peek(self)->value;
 	}

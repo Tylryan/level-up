@@ -17,7 +17,7 @@ struct Klass
 	enum OBJECT_TYPE type;
 	std::string name;
 	std::string package;
-	std::vector<struct package*> imports;
+	std::vector<std::string> imports;
 	std::vector<struct inter*> interfaces;
 	std::vector<struct field*> fields;
 	std::vector<struct method*> methods;

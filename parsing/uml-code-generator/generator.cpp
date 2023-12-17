@@ -217,7 +217,7 @@ handle_relations(struct generator * self,
 			o = find_p_object(self, o->common->pid);
 			if (otype == PARSER_FIELD)
 			{
-			    klass->imports.push_back(o->package);
+			    klass->imports.push_back(o->inter->import_path);
 			}
 			otype = o->common->type;
 		}
@@ -232,7 +232,8 @@ handle_relations(struct generator * self,
 		{
 			printf("parser: FOUND INTERFACE\n");
 			klass->interfaces.push_back(o->inter);
-			klass->imports.push_back(o->package);
+
+			klass->imports.push_back(o->inter->import_path);
 		}
 
 	}

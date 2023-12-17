@@ -53,9 +53,8 @@ writer_write_imports(FILE * fptr, struct Klass * k)
 	for (int i = 0; i < k->imports.size(); i++)
 	{
 		fprintf(fptr,
-			"import %s.%s;\n",
-			k->package.c_str(),
-			k->imports[i]->value.c_str());
+			"import %s;\n",
+			k->imports[i].c_str());
 	}
 	fprintf(fptr, "\n\n");
 }
