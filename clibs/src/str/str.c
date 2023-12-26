@@ -1,8 +1,8 @@
 #include <ctype.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,7 +13,7 @@ str_create(char * val)
 {
 	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t));
 
-	size_t size  = strlen(val);
+	int32_t size  = strlen(val);
 	string->val  = (char*) malloc((size+1) * sizeof(char*));
 	string->size = size;
 
@@ -26,7 +26,7 @@ str_create_empty()
 {
 	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t));
 
-	size_t size  = 0;
+	int32_t size  = 0;
 	string->val  = (char*) malloc((size+1) * sizeof(char*));
 	string->size = size;
 
@@ -41,14 +41,14 @@ str_destroy(struct str_t * self)
 	free(self);
 }
 
-size_t str_handle_index(struct str_t * self, long index)
+int32_t str_handle_index(struct str_t * self, long index)
 {
 	if (index < 0)
 	{
 		index += self->size;
 	}
 
-	if (index >= self->size)
+	if (index >= (long)self->size)
 	{
 		fprintf(stderr, "error: index out of bounds\n");
 		abort();
@@ -91,7 +91,7 @@ str_equalsic(struct str_t * self, char * other)
 		return false;
 	}
 
-	for (size_t i = 0; i < self->size; i++)
+	for (int32_t i = 0; i < self->size; i++)
 	{
 		char left = tolower(self->val[i]);
 		char right = tolower(other[i]);
@@ -112,7 +112,6 @@ str_reset(struct str_t * self)
 	self = str_create_empty();
 }
 
-
 void str_append(struct str_t * self, char * other)
 {
 	str_sappend(self, other);
@@ -121,7 +120,7 @@ void str_append(struct str_t * self, char * other)
 void
 str_sappend(struct str_t * self, char * other)
 {
-	size_t new_size = self->size + strlen(other);
+	int32_t new_size = self->size + strlen(other);
 	self = realloc(self, new_size + 1);
 	strncat(self->val, other, strlen(other) + 1);
 	self->size = new_size;
@@ -136,7 +135,7 @@ str_push_back(struct str_t * self, char other)
 void
 str_cappend(struct str_t * self, char other)
 {
-	size_t new_size = self->size + 1;
+	int32_t new_size = self->size + 1;
 	self = realloc(self, new_size);
 	strncat(self->val, &other, + 1);
 	self->size = new_size;
@@ -145,7 +144,7 @@ str_cappend(struct str_t * self, char other)
 long
 str_cfind(struct str_t * self, char needle)
 {
-	for (int i = 0; i < self->size; i++)
+	for (int32_t i = 0; i < self->size; i++)
 	{
 		if (self->val[i] == needle)
 		{
@@ -156,14 +155,14 @@ str_cfind(struct str_t * self, char needle)
 }
 
 struct str_t *
-str_substr(struct str_t * self, size_t start, size_t end)
+str_substr(struct str_t * self, int32_t start, int32_t end)
 {
 	if (start == end)
 	{
 		return str_create("");
 	}
 
-	size_t size = end - start + 1;
+	int32_t size = end - start + 1;
 	char buff[size];
 	strncpy(buff, self->val + start, size -1);
 	return str_create(buff);
@@ -172,7 +171,7 @@ str_substr(struct str_t * self, size_t start, size_t end)
 long
 str_sfind(struct str_t * self, char * needle)
 {
-	size_t l, r, start;
+	int32_t l, r, start;
 	l = r = start = 0;
 
 	struct str_t * sub = str_create("");
@@ -219,4 +218,16 @@ str_ccontains(struct str_t * self, char needle)
 	}
 
 	return true;
+}
+
+struct str_t *
+str_reversed(struct str_t * self)
+{
+	struct str_t * rev = str_create_empty();
+	for (long i = (long)self->size - 1; i >= 0; i--)
+	{
+		str_cappend(rev, str_get(self, i));
+	}
+
+	return rev;
 }

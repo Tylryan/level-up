@@ -62,14 +62,20 @@ main(void)
 
 	str_set(e, 0, 'F');
 	assert(strcmp(e->val, "FI") == 0);
+	assert(e->size == strlen(e->val));
 
 	str_set(e, -1, 'O');
 	assert(strcmp(e->val, "FO") == 0);
+	assert(e->size == strlen(e->val));
 
+	struct str_t * rev = str_reversed(e);
+	assert(strcmp(rev->val, "OF") == 0);
 
 	str_destroy(e);
 	str_destroy(s);
 	str_destroy(str);
 	str_destroy(sub);
 	str_destroy(emp);
+
+	printf("STR TESTS PASSED\n");
 }

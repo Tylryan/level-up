@@ -11,7 +11,7 @@ A simple size based string library.
 struct str_t
 {
 	char * val;
-	size_t size;
+	int32_t size;
 };
 
 struct str_t * str_create(char * val);
@@ -33,10 +33,11 @@ void str_cappend(struct str_t * self, char other);
 /* str_push_back(): same as cappend. replicates c++ function */
 void str_push_back(struct str_t * self, char other);
 long str_cfind(struct str_t * haystack, char needle);
-struct str_t * str_substr(struct str_t * self, size_t start, size_t end);
+struct str_t * str_substr(struct str_t * self, int32_t start, int32_t end);
 long str_sfind(struct str_t * haystack, char * needle);
 bool str_scontains(struct str_t * self, char * needle);
 bool str_ccontains(struct str_t * self, char needle);
 bool str_equals(struct str_t * self, char * other);
 /* str_equalsic(): returns true if strings equal ignoring case and false otherwise */
 bool str_equalsic(struct str_t * self, char * other);
+struct str_t * str_reversed(struct str_t * self);

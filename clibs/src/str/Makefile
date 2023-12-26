@@ -3,20 +3,29 @@ FLAGS	 = -Wall -Werror -Wextra -Wpedantic
 LIB_NAME = str
 LIB_PATH = ../../libs
 INCLUDE_PATH = ../../include
+TEST_DIR=test
 
-all: a.out
+archive: objects
+	ar rcsv lib$(LIB_NAME).a $(LIB_NAME).o
+	mv lib$(LIB_NAME).a ../../libs
+	cp $(LIB_NAME).h ../../include
 
-a.out: str.o
-	$(CC) $^ $(FLAGS) -g
+install: objects
+	cp ../../libs/lib$(LIB_NAME).a /usr/local/lib
+	cp ../../include/$(LIB_NAME).h /usr/local/include
 
-str.o: str.c
-	gcc $^ -c $(FLAGS) -g
+uninstall:
+	rm /usr/local/lib/lib$(LIB_NAME).a
+	rm /usr/local/include/$(LIB_NAME).h
 
+objects: $(LIB_NAME).c
+	gcc -g -c $^ $(FLAGS)
+
+# Currently this doesn't work
+test: $(LIB_NAME).c $(LIB_NAME).h $(TEST_DIR)/main.c
+	make -C $(TEST_DIR)
+	./$(TEST_DIR)/main.c
 clean:
-	rm a.out *.o *.a
-	rm $(LIB_PATH)/lib$(LIB_NAME).a $(INCLUDE_PATH)/$(LIB_NAME).h
-
-arc:
-	ar cr lib$(LIB_NAME).a str.o
-	cp lib$(LIB_NAME).a $(LIB_PATH)
-	cp $(LIB_NAME).h $(INCLUDE_PATH)
+	rm  ../../libs/lib$(LIB_NAME).a
+	rm ../../include/$(LIB_NAME).h
+	rm *.o
