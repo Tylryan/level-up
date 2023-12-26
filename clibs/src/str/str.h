@@ -2,27 +2,41 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 /**************************************
 A simple size based string library.
  **************************************/
-typedef struct __str
+
+struct str_t
 {
-	char * string;
-	size_t length;
-} str_t;
+	char * val;
+	size_t size;
+};
 
-/* Constructor */
-str_t str(const char * string);
+struct str_t * str_create(char * val);
+struct str_t * str_create_empty();
+void str_destroy(struct str_t * self);
 
-void sfree(str_t string);
+/* str_reset(): sets the value of the string to "" */
+void str_reset(struct str_t * self);
 
-/* String to char pointer */
-char * stcp(const str_t * string);
-/* String from char pointer */
-str_t sfcp(const char * string);
+/* str_at(): same as str_get(). tries to replicates c++ function */
+char str_at(struct str_t * self, long index);
+char str_get(struct str_t * self, long index);
+void str_set(struct str_t * self, long index, char val);
 
-/* I believe this will still have the null term at the end */
-void sappend(str_t * string, const char * cp);
-
-str_t ssub(const str_t * string, size_t start, size_t end);
+void str_sappend(struct str_t * self, char * other);
+/* str_sappend(): same as sappend. replicates c++ function */
+void str_append(struct str_t * self, char * other);
+void str_cappend(struct str_t * self, char other);
+/* str_push_back(): same as cappend. replicates c++ function */
+void str_push_back(struct str_t * self, char other);
+long str_cfind(struct str_t * haystack, char needle);
+struct str_t * str_substr(struct str_t * self, size_t start, size_t end);
+long str_sfind(struct str_t * haystack, char * needle);
+bool str_scontains(struct str_t * self, char * needle);
+bool str_ccontains(struct str_t * self, char needle);
+bool str_equals(struct str_t * self, char * other);
+/* str_equalsic(): returns true if strings equal ignoring case and false otherwise */
+bool str_equalsic(struct str_t * self, char * other);

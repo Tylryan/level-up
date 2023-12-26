@@ -49,6 +49,25 @@ main(void)
 	assert(str_scontains(str, "HELL") == true);
 	assert(str_scontains(str, "HELLO") == false);
 
+	struct str_t * e = str_create("HI");
+	assert(str_equals(e, "HI") == true);
+	assert(str_equals(e, "hi") == false);
+	assert(str_equals(e, "HELLO") == false);
+
+	assert(str_equalsic(e, "hi") == true);
+	assert(str_equalsic(e, "hello") == false);
+
+	assert(str_at(e, 0) == 'H');
+	assert(str_at(e, -1) == 'I');
+
+	str_set(e, 0, 'F');
+	assert(strcmp(e->val, "FI") == 0);
+
+	str_set(e, -1, 'O');
+	assert(strcmp(e->val, "FO") == 0);
+
+
+	str_destroy(e);
 	str_destroy(s);
 	str_destroy(str);
 	str_destroy(sub);

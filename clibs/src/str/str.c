@@ -1,89 +1,222 @@
+#include <ctype.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "str.h"
-#include <vector.h>
+#include "./str.h"
 
-str_t
-str(const char * string)
+struct str_t *
+str_create(char * val)
 {
-	size_t string_len = strlen(string);
-	char * copy = (char*) malloc(string_len * sizeof(char));
+	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t));
 
-	if (string == NULL)
-		copy = "";
-	else 
-	    strncpy(copy, string, strlen(string));
+	size_t size  = strlen(val);
+	string->val  = (char*) malloc((size+1) * sizeof(char*));
+	string->size = size;
 
-	str_t str = {
-		.string = copy,
-		.length = string_len
-	};
+	memcpy(string->val, val, strlen(val) + 1);
+	return string;
+}
 
-	return str;
+struct str_t *
+str_create_empty()
+{
+	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t));
+
+	size_t size  = 0;
+	string->val  = (char*) malloc((size+1) * sizeof(char*));
+	string->size = size;
+
+	memcpy(string->val, "", 1);
+	return string;
 }
 
 void
-sfree(str_t string)
+str_destroy(struct str_t * self)
 {
-	free(string.string);
-	string.length = 0;
+	free(self->val);
+	free(self);
 }
 
-void
-sappend(str_t * string, const char * cp)
+size_t str_handle_index(struct str_t * self, long index)
 {
-	size_t cp_length = strlen(cp);
-	size_t old_length = string->length;
-	size_t new_length = cp_length + old_length;
-	char * old_string = string->string;
-	string->string = (char *) realloc(string->string, new_length * sizeof(char));
-	strncpy(string->string, old_string, old_length);
-	strncat(string->string, cp, cp_length);
-
-	printf("NEW STRING: %s\n", string->string);
-	string->length = new_length;
-}
-
-str_t
-ssub(const str_t *string, size_t start, size_t end)
-{
-	char sub[end - start];
-	strncpy(sub, string->string+start, end);
-	sub[end] = '\0';
-	return str(sub);
-}
-
-
-enum FLGS
-{
-	N = 0,
-	A = 1,
-	B = 2,
-	C = 4,
-	D = 8
-};
-
-int
-main(void)
-{
-
-	int something = N | B | C | D;
-	//something |=1;
-	/* something |=B; */
-	/* something |=C; */
-	/* something |=D; */
-
-
-	printf("0x%02x\n", something);
-
-	if (something & B)
+	if (index < 0)
 	{
-		printf("YUP\n");
-		
+		index += self->size;
 	}
-					    
+
+	if (index >= self->size)
+	{
+		fprintf(stderr, "error: index out of bounds\n");
+		abort();
+	}
+
+	return index;
+}
+
+char
+str_get(struct str_t * self, long index)
+{
+	index = str_handle_index(self, index);
+	return self->val[index];
+}
+
+char
+str_at(struct str_t * self, long index)
+{
+	return str_get(self, index);
+}
+
+void
+str_set(struct str_t * self, long index, char val)
+{
+	index = str_handle_index(self, index);
+	self->val[index] = val;
+}
+
+bool
+str_equals(struct str_t * self, char * other)
+{
+	return strcmp(self->val, other) == 0;
+}
+
+bool
+str_equalsic(struct str_t * self, char * other)
+{
+	if (self->size != strlen(other))
+	{
+		return false;
+	}
+
+	for (size_t i = 0; i < self->size; i++)
+	{
+		char left = tolower(self->val[i]);
+		char right = tolower(other[i]);
+
+		if (left != right)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void
+str_reset(struct str_t * self)
+{
+	str_destroy(self);
+	self = str_create_empty();
+}
 
 
-	return 0;
+void str_append(struct str_t * self, char * other)
+{
+	str_sappend(self, other);
+}
+
+void
+str_sappend(struct str_t * self, char * other)
+{
+	size_t new_size = self->size + strlen(other);
+	self = realloc(self, new_size + 1);
+	strncat(self->val, other, strlen(other) + 1);
+	self->size = new_size;
+}
+
+void
+str_push_back(struct str_t * self, char other)
+{
+	str_cappend(self, other);
+}
+
+void
+str_cappend(struct str_t * self, char other)
+{
+	size_t new_size = self->size + 1;
+	self = realloc(self, new_size);
+	strncat(self->val, &other, + 1);
+	self->size = new_size;
+}
+
+long
+str_cfind(struct str_t * self, char needle)
+{
+	for (int i = 0; i < self->size; i++)
+	{
+		if (self->val[i] == needle)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+struct str_t *
+str_substr(struct str_t * self, size_t start, size_t end)
+{
+	if (start == end)
+	{
+		return str_create("");
+	}
+
+	size_t size = end - start + 1;
+	char buff[size];
+	strncpy(buff, self->val + start, size -1);
+	return str_create(buff);
+}
+
+long
+str_sfind(struct str_t * self, char * needle)
+{
+	size_t l, r, start;
+	l = r = start = 0;
+
+	struct str_t * sub = str_create("");
+	while (r < self->size)
+	{
+		while (self->val[r] == needle[l])
+		{
+			str_cappend(sub, self->val[r]);
+			if (strcmp(sub->val, needle) == 0)
+			{
+				str_destroy(sub);
+				return start;
+			}
+			r++;
+			l++;
+		}
+
+		str_reset(sub);
+
+		r++;
+		start++;
+	}
+
+	str_destroy(sub);
+	return -1;
+}
+
+bool
+str_scontains(struct str_t * self, char * needle)
+{
+	if (str_sfind(self, needle) == -1)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool
+str_ccontains(struct str_t * self, char needle)
+{
+	if (str_cfind(self, needle) == -1)
+	{
+		return false;
+	}
+
+	return true;
 }
