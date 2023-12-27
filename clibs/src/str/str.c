@@ -11,7 +11,7 @@
 struct str_t *
 str_create(char * val)
 {
-	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t));
+	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t *));
 
 	int32_t size  = strlen(val);
 	string->val  = (char*) malloc((size+1) * sizeof(char*));
@@ -24,7 +24,7 @@ str_create(char * val)
 struct str_t *
 str_create_empty()
 {
-	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t));
+	struct str_t * string = (struct str_t*) malloc(sizeof(struct str_t*));
 
 	int32_t size  = 0;
 	string->val  = (char*) malloc((size+1) * sizeof(char*));
@@ -38,7 +38,10 @@ void
 str_destroy(struct str_t * self)
 {
 	free(self->val);
-	free(self);
+	self->val = NULL;
+	/* TODO(tyler) freeing this causes abort */
+	//free(self);
+	self = NULL;
 }
 
 int32_t
@@ -124,7 +127,9 @@ str_sappend(struct str_t * self, char * other)
 	int32_t new_size = self->size + strlen(other);
 
 	/* would realloc, but it doesn't work */
-	char * temp = self->val;
+	char temp[strlen(self->val)];
+	memcpy(temp, self->val, strlen(self->val));
+
 	free(self->val);
 	self->val = (char*)malloc(sizeof(char*) * (new_size+1));
 
@@ -134,6 +139,7 @@ str_sappend(struct str_t * self, char * other)
 		abort();
 	}
 
+	strcpy(self->val, temp);
 	strncat(self->val, other, strlen(other) + 1);
 	self->size = new_size;
 }

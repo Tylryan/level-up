@@ -19,7 +19,7 @@ uninstall:
 	rm /usr/local/include/$(LIB_NAME).h
 
 objects: $(LIB_NAME).c
-	gcc -g -c $^ $(FLAGS) -O3
+	gcc -g -c $^ $(FLAGS) -O2
 
 # Currently this doesn't work
 test: $(LIB_NAME).c $(LIB_NAME).h $(TEST_DIR)/main.c
