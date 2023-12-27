@@ -41,7 +41,8 @@ str_destroy(struct str_t * self)
 	free(self);
 }
 
-int32_t str_handle_index(struct str_t * self, long index)
+int32_t
+str_handle_index(struct str_t * self, long index)
 {
 	if (index < 0)
 	{
@@ -86,7 +87,7 @@ str_equals(struct str_t * self, char * other)
 bool
 str_equalsic(struct str_t * self, char * other)
 {
-	if (self->size != strlen(other))
+	if (self->size != (int32_t)strlen(other))
 	{
 		return false;
 	}
@@ -121,7 +122,18 @@ void
 str_sappend(struct str_t * self, char * other)
 {
 	int32_t new_size = self->size + strlen(other);
-	self = realloc(self, new_size + 1);
+
+	/* would realloc, but it doesn't work */
+	char * temp = self->val;
+	free(self->val);
+	self->val = (char*)malloc(sizeof(char*) * (new_size+1));
+
+	if (self->val == NULL)
+	{
+		printf("str.str_sappend() - failed\n");
+		abort();
+	}
+
 	strncat(self->val, other, strlen(other) + 1);
 	self->size = new_size;
 }

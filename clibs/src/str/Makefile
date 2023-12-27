@@ -1,5 +1,5 @@
 CC       = gcc
-FLAGS	 = -Wall -Werror -Wextra -Wpedantic
+FLAGS	 = -Wall -Wextra -Wpedantic
 LIB_NAME = str
 LIB_PATH = ../../libs
 INCLUDE_PATH = ../../include
@@ -19,7 +19,7 @@ uninstall:
 	rm /usr/local/include/$(LIB_NAME).h
 
 objects: $(LIB_NAME).c
-	gcc -g -c $^ $(FLAGS)
+	gcc -g -c $^ $(FLAGS) -O3
 
 # Currently this doesn't work
 test: $(LIB_NAME).c $(LIB_NAME).h $(TEST_DIR)/main.c
